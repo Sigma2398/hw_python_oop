@@ -1,5 +1,7 @@
 from typing import Dict, Type
-
+#Коммент для ревьюера: Что то запутался чуть чуть, пока что исправлял.
+#Скорее всего наделал новые ошибки и не исправил некоторые старые.
+#Голова кругом пошла, пока что исправлял
 
 class InfoMessage:
     """Информационное сообщение о тренировке."""
@@ -48,6 +50,7 @@ class Training:
     def __init__(self, action: int,
                  duration: float,
                  weight: float) -> None:
+        self.name = self.__class__.__name__
         self.action = action
         self.duration = duration
         self.weight = weight
@@ -156,7 +159,7 @@ class Swimming(Training):
     weight: float
     length_pool: float
     count_pool: float
-    LEN_STEP: float
+    LEN_STEP: float = 1.38
 
     def __init__(self, action: int,
                  duration: float,
@@ -167,7 +170,7 @@ class Swimming(Training):
         self.name = self.__class__.__name__
         self.length_pool = length_pool
         self.count_pool = count_pool
-        self.LEN_STEP = self.FLIPPER_LENGTH
+        self.LEN_STEP = 1.38
 
     def get_distance(self) -> float:
         """Получить дистанцию в км."""
