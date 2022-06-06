@@ -1,12 +1,8 @@
-""" Константные переменные, которые пригодятся далее """
-MILLI: int = 1000
-MINUT_60: int = 60
-STEP_LENGTH: float = 0.65
-FLIPPER_LENGTH: float = 1.38
-
+from typing import Sequence, Union, Dict, Type
 
 class InfoMessage:
     """Информационное сообщение о тренировке."""
+
     training_type: str
     duration: float
     distance: float
@@ -34,23 +30,28 @@ class InfoMessage:
 
 class Training:
     """Базовый класс тренировки."""
+
+    MILLI: int = 1000
+    MINUTES_IN_HOUR: int = 60
+    STEP_LENGTH: float = 0.65
+    FLIPPER_LENGTH: float = 1.38
+
     name: str
-    action: int
+    action: float
     duration: float
     weight: float
     weight: float
-    M_IN_KM: int = MILLI
+    M_IN_KM: float = MILLI
     LEN_STEP: float = STEP_LENGTH
 
-    def __init__(self, action: int,
+    def __init__(self, action: float,
                  duration: float,
                  weight: float) -> None:
-        self.name = 'Training'
         self.action = action
         self.duration = duration
         self.weight = weight
-        self.M_IN_KM = MILLI
-        self.LEN_STEP = STEP_LENGTH
+        self.M_IN_KM = self.MILLI
+        self.LEN_STEP = self.STEP_LENGTH
 
     def get_distance(self) -> float:
         """Получить дистанцию в км."""
@@ -87,15 +88,15 @@ class Running(Training):
     RUN_RATE2: int = 20
 
     name: str
-    action: int
+    action: float
     duration: float
     weight: float
 
-    def __init__(self, action: int,
+    def __init__(self, action: float,
                  duration: float,
                  weight: float) -> None:
         super().__init__(action, duration, weight)
-        self.name = 'Running'
+        self.name = self.__class__.__name__
 
     def get_spent_calories(self) -> float:
         """Получить количество затраченных калорий."""
@@ -103,7 +104,7 @@ class Running(Training):
         num1: float
         num2: float
         num1 = self.RUN_RATE1 * self.get_mean_speed() - self.RUN_RATE2
-        num2 = self.weight * self.duration * MINUT_60
+        num2 = self.weight * self.duration * self.MINUTES_IN_HOUR
         spent_calories = num1 * num2 / self.M_IN_KM
         return spent_calories
 
@@ -115,17 +116,17 @@ class SportsWalking(Training):
     WLK_RATE2: float = 0.029
 
     name: str
-    action: int
+    action: float
     duration: float
     weight: float
     height: float
 
-    def __init__(self, action: int,
+    def __init__(self, action: float,
                  duration: float,
                  weight: float,
                  height: float) -> None:
         super().__init__(action, duration, weight)
-        self.name = 'SportsWalking'
+        self.name = self.__class__.__name__
         self.height = height
 
     def get_spent_calories(self) -> float:
@@ -137,7 +138,7 @@ class SportsWalking(Training):
         num1 = self.WLK_RATE1 * self.weight
         num2 = self.WLK_RATE2 * self.weight
         num3 = self.get_mean_speed() ** 2 // self.height
-        spent_calories = (num1 + num2 * num3) * self.duration * MINUT_60
+        spent_calories = (num1 + num2 * num3) * self.duration * self.MINUTES_IN_HOUR
         return spent_calories
 
 
@@ -148,23 +149,23 @@ class Swimming(Training):
     SWM_RATE2: int = 2
 
     name: str
-    action: int
+    action: float
     duration: float
     weight: float
-    length_pool: int
-    count_pool: int
-    LEN_STEP: float = FLIPPER_LENGTH
+    length_pool: float
+    count_pool: float
+    LEN_STEP: float
 
-    def __init__(self, action: int,
+    def __init__(self, action: float,
                  duration: float,
                  weight: float,
-                 length_pool: int,
-                 count_pool: int) -> None:
+                 length_pool: float,
+                 count_pool: float) -> None:
         super().__init__(action, duration, weight)
-        self.name = 'Swimming'
+        self.name = self.__class__.__name__
         self.length_pool = length_pool
         self.count_pool = count_pool
-        self.LEN_STEP = FLIPPER_LENGTH
+        self.LEN_STEP = self.FLIPPER_LENGTH
 
     def get_distance(self) -> float:
         """Получить дистанцию в км."""
@@ -189,19 +190,16 @@ class Swimming(Training):
         return spent_calories
 
 
-def read_package(workout_type: str, data: list) -> Training:
+def read_package(workout_type: str, data: Sequence[Union[float,int]]) -> Training:
     """Прочитать данные полученные от датчиков."""
-    sports = {
+    sports: Dict[str, Type[Training]] = {
         'RUN': Running,
         'WLK': SportsWalking,
         'SWM': Swimming}
-    for sport in sports:
-        try:
-            if sport == workout_type:
-                training = sports[sport](*data)
-                return training
-        except ValueError:
-            raise ValueError('Неизвестный вид тренировки')
+    if workout_type not in sports:
+        raise KeyError(f'{workout_type} - неизвестный тип тренировки')
+
+    return sports[workout_type](*data)
 
 
 def main(training: Training) -> None:
