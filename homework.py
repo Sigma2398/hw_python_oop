@@ -1,5 +1,6 @@
 from typing import Sequence, Union, Dict, Type
 
+
 class InfoMessage:
     """Информационное сообщение о тренировке."""
 
@@ -190,7 +191,7 @@ class Swimming(Training):
         return spent_calories
 
 
-def read_package(workout_type: str, data: Sequence[Union[float,int]]) -> Training:
+def read_package(workout_type: str, data: Sequence[Union[float, int]]) -> Training:
     """Прочитать данные полученные от датчиков."""
     sports: Dict[str, Type[Training]] = {
         'RUN': Running,
