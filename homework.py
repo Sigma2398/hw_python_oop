@@ -1,4 +1,4 @@
-from typing import Sequence, Union, Dict, Type
+from typing import Dict, Type
 
 
 class InfoMessage:
@@ -38,14 +38,14 @@ class Training:
     FLIPPER_LENGTH: float = 1.38
 
     name: str
-    action: float
+    action: int
     duration: float
     weight: float
     weight: float
     M_IN_KM: float = MILLI
     LEN_STEP: float = STEP_LENGTH
 
-    def __init__(self, action: float,
+    def __init__(self, action: int,
                  duration: float,
                  weight: float) -> None:
         self.action = action
@@ -89,11 +89,11 @@ class Running(Training):
     RUN_RATE2: int = 20
 
     name: str
-    action: float
+    action: int
     duration: float
     weight: float
 
-    def __init__(self, action: float,
+    def __init__(self, action: int,
                  duration: float,
                  weight: float) -> None:
         super().__init__(action, duration, weight)
@@ -117,12 +117,12 @@ class SportsWalking(Training):
     WLK_RATE2: float = 0.029
 
     name: str
-    action: float
+    action: int
     duration: float
     weight: float
     height: float
 
-    def __init__(self, action: float,
+    def __init__(self, action: int,
                  duration: float,
                  weight: float,
                  height: float) -> None:
@@ -139,7 +139,8 @@ class SportsWalking(Training):
         num1 = self.WLK_RATE1 * self.weight
         num2 = self.WLK_RATE2 * self.weight
         num3 = self.get_mean_speed() ** 2 // self.height
-        spent_calories = (num1 + num2 * num3) * self.duration * self.MINUTES_IN_HOUR
+        sumnum = (num1 + num2 * num3)
+        spent_calories = sumnum * self.duration * self.MINUTES_IN_HOUR
         return spent_calories
 
 
@@ -150,14 +151,14 @@ class Swimming(Training):
     SWM_RATE2: int = 2
 
     name: str
-    action: float
+    action: int
     duration: float
     weight: float
     length_pool: float
     count_pool: float
     LEN_STEP: float
 
-    def __init__(self, action: float,
+    def __init__(self, action: int,
                  duration: float,
                  weight: float,
                  length_pool: float,
@@ -191,7 +192,7 @@ class Swimming(Training):
         return spent_calories
 
 
-def read_package(workout_type: str, data: Sequence[Union[float, int]]) -> Training:
+def read_package(workout_type: str, data: list) -> Training:
     """Прочитать данные полученные от датчиков."""
     sports: Dict[str, Type[Training]] = {
         'RUN': Running,
