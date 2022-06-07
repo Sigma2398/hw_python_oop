@@ -45,23 +45,21 @@ class Training:
     duration: float
     weight: float
     weight: float
-    M_IN_KM: float = MILLI
     LEN_STEP: float = STEP_LENGTH
 
     def __init__(self, action: int,
                  duration: float,
                  weight: float) -> None:
-        self.name = self.__class__.__name__
+        self.name = self.__class__.__name__  # без объявления name тесты не проходят
         self.action = action
         self.duration = duration
         self.weight = weight
-        self.M_IN_KM = self.MILLI
         self.LEN_STEP = self.STEP_LENGTH
 
     def get_distance(self) -> float:
         """Получить дистанцию в км."""
         distance: float
-        distance = self.action * self.LEN_STEP / self.M_IN_KM
+        distance = self.action * self.LEN_STEP / self.MILLI
         return distance
 
     def get_mean_speed(self) -> float:
@@ -92,16 +90,9 @@ class Running(Training):
     RUN_RATE1: int = 18
     RUN_RATE2: int = 20
 
-    name: str
     action: int
     duration: float
     weight: float
-
-    def __init__(self, action: int,
-                 duration: float,
-                 weight: float) -> None:
-        super().__init__(action, duration, weight)
-        self.name = self.__class__.__name__
 
     def get_spent_calories(self) -> float:
         """Получить количество затраченных калорий."""
@@ -110,7 +101,7 @@ class Running(Training):
         num2: float
         num1 = self.RUN_RATE1 * self.get_mean_speed() - self.RUN_RATE2
         num2 = self.weight * self.duration * self.MINUTES_IN_HOUR
-        spent_calories = num1 * num2 / self.M_IN_KM
+        spent_calories = num1 * num2 / self.MILLI
         return spent_calories
 
 
@@ -120,7 +111,6 @@ class SportsWalking(Training):
     WLK_RATE1: float = 0.035
     WLK_RATE2: float = 0.029
 
-    name: str
     action: int
     duration: float
     weight: float
@@ -131,7 +121,6 @@ class SportsWalking(Training):
                  weight: float,
                  height: float) -> None:
         super().__init__(action, duration, weight)
-        self.name = self.__class__.__name__
         self.height = height
 
     def get_spent_calories(self) -> float:
@@ -171,12 +160,11 @@ class Swimming(Training):
         self.name = self.__class__.__name__
         self.length_pool = length_pool
         self.count_pool = count_pool
-        self.LEN_STEP = 1.38
 
     def get_distance(self) -> float:
         """Получить дистанцию в км."""
         distance: float
-        distance = self.action * self.LEN_STEP / self.M_IN_KM
+        distance = self.action * self.LEN_STEP / self.MILLI
         return distance
 
     def get_mean_speed(self) -> float:
@@ -184,7 +172,7 @@ class Swimming(Training):
         mean_speed: float
         num1: float
         num1 = self.length_pool * self.count_pool
-        mean_speed = num1 / self.M_IN_KM / self.duration
+        mean_speed = num1 / self.MILLI / self.duration
         return mean_speed
 
     def get_spent_calories(self) -> float:
