@@ -37,7 +37,7 @@ class Training:
 
     MILLI: int = 1000
     MINUTES_IN_HOUR: int = 60
-    STEP_LENGTH: float = 0.65
+    LEN_STEP: float = 0.65
     FLIPPER_LENGTH: float = 1.38
 
     name: str
@@ -58,7 +58,7 @@ class Training:
     def get_distance(self) -> float:
         """Получить дистанцию в км."""
         distance: float
-        distance = self.action * self.STEP_LENGTH / self.MILLI
+        distance = self.action * self.LEN_STEP / self.MILLI
         return distance
 
     def get_mean_speed(self) -> float:
