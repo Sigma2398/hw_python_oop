@@ -45,7 +45,6 @@ class Training:
     duration: float
     weight: float
     weight: float
-    LEN_STEP: float = STEP_LENGTH
 
     def __init__(self, action: int,
                  duration: float,
@@ -54,12 +53,11 @@ class Training:
         self.action = action
         self.duration = duration
         self.weight = weight
-        self.LEN_STEP = self.STEP_LENGTH
 
     def get_distance(self) -> float:
         """Получить дистанцию в км."""
         distance: float
-        distance = self.action * self.LEN_STEP / self.MILLI
+        distance = self.action * self.STEP_LENGTH / self.MILLI
         return distance
 
     def get_mean_speed(self) -> float:
