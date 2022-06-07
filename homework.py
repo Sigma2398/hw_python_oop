@@ -1,9 +1,13 @@
 from typing import Dict, Type
+from dataclasses import dataclass
+
+
 # Коммент для ревьюера: Что то запутался чуть чуть, пока что исправлял.
 # Скорее всего наделал новые ошибки и не исправил некоторые старые.
 # Голова кругом пошла, пока что исправлял
 
 
+@dataclass
 class InfoMessage:
     """Информационное сообщение о тренировке."""
 
@@ -12,17 +16,6 @@ class InfoMessage:
     distance: float
     speed: float
     calories: float
-
-    def __init__(self, training_type: str,
-                 duration: float,
-                 distance: float,
-                 speed: float,
-                 calories: float) -> None:
-        self.training_type = training_type
-        self.duration = duration
-        self.distance = distance
-        self.speed = speed
-        self.calories = calories
 
     def get_message(self) -> str:
         return (f'Тип тренировки: {self.training_type}; '
@@ -35,7 +28,7 @@ class InfoMessage:
 class Training:
     """Базовый класс тренировки."""
 
-    MILLI: int = 1000
+    M_IN_KM: int = 1000
     MINUTES_IN_HOUR: int = 60
     LEN_STEP: float = 0.65
     FLIPPER_LENGTH: float = 1.38
@@ -58,7 +51,7 @@ class Training:
     def get_distance(self) -> float:
         """Получить дистанцию в км."""
         distance: float
-        distance = self.action * self.LEN_STEP / self.MILLI
+        distance = self.action * self.LEN_STEP / self.M_IN_KM
         return distance
 
     def get_mean_speed(self) -> float:
@@ -67,13 +60,14 @@ class Training:
         mean_speed = self.get_distance() / self.duration
         return mean_speed
 
-    def get_spent_calories(self) -> float:
+    def get_spent_calories(self):
         """Получить количество затраченных калорий."""
-        spent_calories: float = 0.0
-        return spent_calories
+        raise KeyError(f'Метод не переопределен для класса')
 
     def show_training_info(self) -> InfoMessage:
         """Вернуть информационное сообщение о выполненной тренировке."""
+        # А можно лучше оставить так как есть?
+        # В данном случае понятнее, по моему, так.
         message = InfoMessage(
             self.name,
             self.duration,
@@ -100,7 +94,7 @@ class Running(Training):
         num2: float
         num1 = self.RUN_RATE1 * self.get_mean_speed() - self.RUN_RATE2
         num2 = self.weight * self.duration * self.MINUTES_IN_HOUR
-        spent_calories = num1 * num2 / self.MILLI
+        spent_calories = num1 * num2 / self.M_IN_KM
         return spent_calories
 
 
@@ -163,7 +157,7 @@ class Swimming(Training):
     def get_distance(self) -> float:
         """Получить дистанцию в км."""
         distance: float
-        distance = self.action * self.LEN_STEP / self.MILLI
+        distance = self.action * self.LEN_STEP / self.M_IN_KM
         return distance
 
     def get_mean_speed(self) -> float:
@@ -171,7 +165,7 @@ class Swimming(Training):
         mean_speed: float
         num1: float
         num1 = self.length_pool * self.count_pool
-        mean_speed = num1 / self.MILLI / self.duration
+        mean_speed = num1 / self.M_IN_KM / self.duration
         return mean_speed
 
     def get_spent_calories(self) -> float:
@@ -189,10 +183,10 @@ def read_package(workout_type: str, data: list) -> Training:
         'RUN': Running,
         'WLK': SportsWalking,
         'SWM': Swimming}
-    if workout_type not in sports:
+    try:
+        return sports[workout_type](*data)
+    except Exception:
         raise KeyError(f'{workout_type} - неизвестный тип тренировки')
-
-    return sports[workout_type](*data)
 
 
 def main(training: Training) -> None:
@@ -205,7 +199,8 @@ if __name__ == '__main__':
     packages = [
         ('SWM', [720, 1, 80, 25, 40]),
         ('RUN', [15000, 1, 75]),
-        ('WLK', [9000, 1, 75, 180])]
+        ('WLK', [9000, 1, 75, 180])
+    ]
     for workout_type, data in packages:
         training = read_package(workout_type, data)
         main(training)
