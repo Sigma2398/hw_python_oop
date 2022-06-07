@@ -62,7 +62,7 @@ class Training:
 
     def get_spent_calories(self):
         """Получить количество затраченных калорий."""
-        raise KeyError(f'Метод не переопределен для класса')
+        raise KeyError('Метод не переопределен для класса')
 
     def show_training_info(self) -> InfoMessage:
         """Вернуть информационное сообщение о выполненной тренировке."""
