@@ -49,7 +49,8 @@ class Training:
     def __init__(self, action: int,
                  duration: float,
                  weight: float) -> None:
-        self.name = self.__class__.__name__  # без объявления name тесты не проходят
+        # без объявления name тесты не проходят
+        self.name = self.__class__.__name__
         self.action = action
         self.duration = duration
         self.weight = weight
