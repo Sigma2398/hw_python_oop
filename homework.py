@@ -2,12 +2,14 @@ from typing import Dict, Type
 from dataclasses import dataclass
 
 
-# Коммент для ревьюера: Что то запутался чуть чуть, пока что исправлял.
-# Скорее всего наделал новые ошибки и не исправил некоторые старые.
-# Голова кругом пошла, пока что исправлял
+# Вроде всё поправил и новых ошибок не должно было появиться
+# Я думал, что обучение на Data Science труднее, чем на разработку
+# Но нет)) Обычно два исправления в проектах по Data Science
+# А тут уже третий возврат.
+# Просто мысли в слух. Привык уже свои мысли писать ревьеру.
 
 
-@dataclass
+@dataclass(frozen=True)
 class InfoMessage:
     """Информационное сообщение о тренировке."""
 
@@ -18,11 +20,12 @@ class InfoMessage:
     calories: float
 
     def get_message(self) -> str:
-        return (f'Тип тренировки: {self.training_type}; '
-                f'Длительность: {self.duration:.3f} ч.; '
-                f'Дистанция: {self.distance:.3f} км; '
-                f'Ср. скорость: {self.speed:.3f} км/ч; '
-                f'Потрачено ккал: {self.calories:.3f}.')
+        text: str = (f'Тип тренировки: {self.training_type}; '
+                     f'Длительность: {self.duration:.3f} ч.; '
+                     f'Дистанция: {self.distance:.3f} км; '
+                     f'Ср. скорость: {self.speed:.3f} км/ч; '
+                     f'Потрачено ккал: {self.calories:.3f}.')
+        return text
 
 
 class Training:
@@ -33,7 +36,6 @@ class Training:
     LEN_STEP: float = 0.65
     FLIPPER_LENGTH: float = 1.38
 
-    name: str
     action: int
     duration: float
     weight: float
@@ -42,8 +44,6 @@ class Training:
     def __init__(self, action: int,
                  duration: float,
                  weight: float) -> None:
-        # без объявления name тесты не проходят
-        self.name = self.__class__.__name__
         self.action = action
         self.duration = duration
         self.weight = weight
@@ -62,18 +62,20 @@ class Training:
 
     def get_spent_calories(self):
         """Получить количество затраченных калорий."""
-        raise KeyError('Метод не переопределен для класса')
+        raise NotImplementedError('Метод не переопределен для класса')
 
     def show_training_info(self) -> InfoMessage:
         """Вернуть информационное сообщение о выполненной тренировке."""
-        # А можно лучше оставить так как есть?
-        # В данном случае понятнее, по моему, так.
+        duration = self.duration
+        get_distance = self.get_distance()
+        get_mean_speed = self.get_mean_speed()
+        get_spent_calories = self.get_spent_calories()
         message = InfoMessage(
-            self.name,
-            self.duration,
-            self.get_distance(),
-            self.get_mean_speed(),
-            self.get_spent_calories())
+            self.__class__.__name__,
+            duration,
+            get_distance,
+            get_mean_speed,
+            get_spent_calories)
         return message
 
 
@@ -136,7 +138,6 @@ class Swimming(Training):
     SWM_RATE1: float = 1.1
     SWM_RATE2: int = 2
 
-    name: str
     action: int
     duration: float
     weight: float
@@ -150,7 +151,6 @@ class Swimming(Training):
                  length_pool: float,
                  count_pool: float) -> None:
         super().__init__(action, duration, weight)
-        self.name = self.__class__.__name__
         self.length_pool = length_pool
         self.count_pool = count_pool
 
@@ -199,7 +199,7 @@ if __name__ == '__main__':
     packages = [
         ('SWM', [720, 1, 80, 25, 40]),
         ('RUN', [15000, 1, 75]),
-        ('WLK', [9000, 1, 75, 180])
+        ('WLK', [9000, 1, 75, 180]),
     ]
     for workout_type, data in packages:
         training = read_package(workout_type, data)
