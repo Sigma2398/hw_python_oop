@@ -1,12 +1,8 @@
-from typing import Dict, Type
+from typing import Dict, Type, ClassVar
 from dataclasses import dataclass
 
 
-# Вроде всё поправил и новых ошибок не должно было появиться
-# Я думал, что обучение на Data Science труднее, чем на разработку
-# Но нет)) Обычно два исправления в проектах по Data Science
-# А тут уже третий возврат.
-# Просто мысли в слух. Привык уже свои мысли писать ревьеру.
+# Очень надеюсь, что теперь верно.
 
 
 @dataclass(frozen=True)
@@ -18,13 +14,21 @@ class InfoMessage:
     distance: float
     speed: float
     calories: float
+    
+    PATTERN: ClassVar[str] = (
+        'Тип тренировки: {}; '
+        'Длительность: {:.3f} ч.; '
+        'Дистанция: {:.3f} км; '
+        'Ср. скорость: {:.3f} км/ч; '
+        'Потрачено ккал: {:.3f}.'
+    )
 
     def get_message(self) -> str:
-        text: str = (f'Тип тренировки: {self.training_type}; '
-                     f'Длительность: {self.duration:.3f} ч.; '
-                     f'Дистанция: {self.distance:.3f} км; '
-                     f'Ср. скорость: {self.speed:.3f} км/ч; '
-                     f'Потрачено ккал: {self.calories:.3f}.')
+        text = self.PATTERN.format(
+            self.training_type, self.duration,
+            self.distance, self.speed,
+            self.calories
+        )
         return text
 
 
@@ -38,7 +42,6 @@ class Training:
 
     action: int
     duration: float
-    weight: float
     weight: float
 
     def __init__(self, action: int,
