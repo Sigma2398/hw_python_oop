@@ -14,7 +14,7 @@ class InfoMessage:
     distance: float
     speed: float
     calories: float
-    
+
     PATTERN: ClassVar[str] = (
         'Тип тренировки: {}; '
         'Длительность: {:.3f} ч.; '
